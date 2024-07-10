@@ -65,6 +65,9 @@ class ErrorResponse(BaseModel):
     message: str
     statusCode: int
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 class LoginResponse(BaseModel):
     status: str
     message: str

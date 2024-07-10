@@ -41,8 +41,8 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(database.get_d
 
 
 @router.post("/login", responses={200: {"model": schemas.LoginResponse}, 401: {"model": schemas.ErrorResponse}})
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
-    user = crud.get_user_by_email(db, email=form_data.username)
+def login_for_access_token(form_data: schemas.LoginRequest = Depends(), db: Session = Depends(database.get_db)):
+    user = crud.get_user_by_email(db, email=form_data.email)
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         return JSONResponse(
             status_code=401,
