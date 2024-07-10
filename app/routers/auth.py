@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from app import schemas, crud, models, database, auth
 from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -41,9 +42,9 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(database.get_d
 
 
 @router.post("/login", responses={200: {"model": schemas.LoginResponse}, 401: {"model": schemas.ErrorResponse}})
-def login_for_access_token(form_data: schemas.LoginRequest = Depends(), db: Session = Depends(database.get_db)):
-    user = crud.get_user_by_email(db, email=form_data.email)
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+def login_for_access_token(login_data: schemas.LoginRequest, db: Session = Depends(database.get_db)):
+    user = crud.get_user_by_email(db, email=login_data.email)
+    if not user or not auth.verify_password(login_data.password, user.hashed_password):
         return JSONResponse(
             status_code=401,
             content={
